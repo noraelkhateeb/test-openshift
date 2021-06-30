@@ -1,6 +1,20 @@
 FROM adoptopenjdk/openjdk8:jdk8u202-b08
-WORKDIR /opt
-ENV PORT 8080
+WORKDIR /workspace/app
+
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN ./mvnw install -DskipTests
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+
+FROM openjdk:8-jdk-alpine
+VOLUME /tmp
+ARG DEPENDENCY=/workspace/app/target/dependency
+COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 EXPOSE 8080
-COPY target/*.jar /opt/app.jar
-ENTRYPOINT exec java $JAVA_OPTS -jar app.jar
+ENTRYPOINT ["java","-cp","app:app/lib/*","currencyexchangeservice.CurrencyExchangeServiceApplication"]
+
