@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk8:jdk8u292-b10
+FROM https://hub.docker.com/r/adoptopenjdk/openjdk8:jdk8u292-b10
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -9,7 +9,7 @@ COPY src src
 RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM adoptopenjdk/openjdk8:jdk8u292-b10
+FROM https://hub.docker.com/r/adoptopenjdk/openjdk8:jdk8u292-b10
 VOLUME /tmp
 ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
