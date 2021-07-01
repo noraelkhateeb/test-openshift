@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk8:jdk8u202-b08-alpine-slim as build
+FROM portolano/maven-3.3.9-jdk-8:v1 as build
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -6,7 +6,7 @@ COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install -DskipTests
+RUN mvn install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM adoptopenjdk/openjdk8:jdk8u202-b08-alpine-slim
